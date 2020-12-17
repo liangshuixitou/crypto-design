@@ -1,5 +1,7 @@
 package top.l1hy.utils;
 
+import top.l1hy.pojo.KnapsackCrypto;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -9,71 +11,58 @@ import java.math.BigInteger;
  */
 public class KnapsackCryptoUtils {
 
-    // 1. 超递增背包向量长度
-    // 2. 超递增背包向量
-    // 3. 公钥
-    // 4. 私钥
-
-    private final int MAX = 10;
-    BigInteger[] superSet = new BigInteger[MAX];
-    BigInteger[] publicKeySet = new BigInteger[MAX];
-    BigInteger k, t;
-
-    public int getMAX() {
-        return MAX;
-    }
-
-    public BigInteger[] getSuperSet() {
-        return superSet;
-    }
-
-    public BigInteger[] getPublicKeySet() {
-        return publicKeySet;
-    }
-
-    public BigInteger getK() {
-        return k;
-    }
-
-    public BigInteger getT() {
-        return t;
-    }
-
     // 生成随机超递增背包向量
     // --------------------
 
-    public void generateSetAndPublicKey() {
+    public static void generateSetAndPublicKey(KnapsackCrypto knapsackCrypto) {
+        // 生成超递增背包向量
+        BigInteger[] superSet = new BigInteger[knapsackCrypto.getMAX()];
+        BigInteger[] publicKeySet = new BigInteger[knapsackCrypto.getMAX()];
+        BigInteger k, t;
+
         superSet[0] = (new BigDecimal("10").multiply(new BigDecimal(Math
                 .random() + "")).add(BigDecimal.ONE)).toBigInteger();
-        for (int i = 1; i < MAX; i++) {
+        for (int i = 1; i < knapsackCrypto.getMAX(); i++) {
             superSet[i] = (superSet[i - 1].multiply(new BigInteger("2"))
                     .add(new BigDecimal("10")
                             .multiply(new BigDecimal(Math.random() + ""))
                             .add(BigDecimal.ONE).toBigInteger()));
         }
-        k = (superSet[MAX - 1].multiply(new BigInteger("2"))
+
+        k = (superSet[knapsackCrypto.getMAX() - 1].multiply(new BigInteger("2"))
                 .add(new BigDecimal("10")
                         .multiply(new BigDecimal(Math.random() + ""))
                         .add(BigDecimal.ONE).toBigInteger()));
 
-        t = superSet[MAX - 1];
+        t = superSet[knapsackCrypto.getMAX() - 1];
 
         do {
             t = t.subtract(BigInteger.ONE);
         } while (!k.gcd(t).equals(BigInteger.ONE));
 
-        for (int i = 0; i < MAX; i++) {
+        for (int i = 0; i < knapsackCrypto.getMAX(); i++) {
             publicKeySet[i] = t.multiply(superSet[i]).mod(k);
         }
+
+        knapsackCrypto.setSuperSet(superSet);
+        knapsackCrypto.setPublicKeySet(publicKeySet);
+        knapsackCrypto.setT(t);
+        knapsackCrypto.setK(k);
     }
 
-    public BigInteger encrypt(String m) {
+    public static BigInteger encrypt(String m, KnapsackCrypto knapsackCrypto) {
+        if (m == null) {
+            return new BigInteger(String.valueOf(0));
+        }
+
         BigInteger s = BigInteger.ZERO;
-        for (int i = m.length(); i < MAX; i++) {
+        for (int i = m.length(); i < knapsackCrypto.getMAX(); i++) {
             m = m.concat("0");
         }
 
-        for (int i = 0; i < MAX; i++) {
+        // local var
+        BigInteger[] publicKeySet = knapsackCrypto.getPublicKeySet();
+        for (int i = 0; i < knapsackCrypto.getMAX(); i++) {
             if (m.charAt(i) == '1') {
                 s = s.add(publicKeySet[i]);
             }
@@ -81,11 +70,14 @@ public class KnapsackCryptoUtils {
         return s;
     }
 
-    public String decrypt(BigInteger c) {
+    public static String decrypt(BigInteger c, KnapsackCrypto knapsackCrypto) {
         BigInteger s;
         String x = "";
-        s = t.modInverse(k).multiply(c).mod(k);
-        int num = MAX;
+        s = knapsackCrypto.getT().modInverse(knapsackCrypto.getK()).multiply(c).mod(knapsackCrypto.getK());
+        int num = knapsackCrypto.getMAX();
+
+        // local var
+        BigInteger[] superSet = knapsackCrypto.getSuperSet();
         while (true) {
             if (s.subtract(superSet[num - 1]).signum() > 0) {
                 s = s.subtract(superSet[num - 1]);
@@ -102,6 +94,5 @@ public class KnapsackCryptoUtils {
             x = "0".concat(x);
         }
         return x;
-
     }
 }
