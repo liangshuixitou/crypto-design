@@ -4,12 +4,14 @@ import top.l1hy.pojo.KnapsackCrypto;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author l1hy
  * @Description 背包密码体制工具类，用来随机生成密钥，并进行加解密运算
  */
-public class KnapsackCryptoUtils {
+public class KnapsackCryptoUtil {
 
     // 生成随机超递增背包向量
     // --------------------
@@ -94,5 +96,58 @@ public class KnapsackCryptoUtils {
             x = "0".concat(x);
         }
         return x;
+    }
+
+    // 给定待加密字符串，根据 Ascall 编码后分组成01字符串
+    public static List<String> encode(String m, int MAX) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < m.length(); ++i) {
+            int ch = m.charAt(i);
+            StringBuilder miniBuilder = new StringBuilder();
+            for (int j = 7; j >= 0; --j) {
+                if (ch >= Math.pow(2, j)) {
+                    miniBuilder.append(1);
+                    ch -= Math.round(Math.pow(2, j));
+                } else {
+                    miniBuilder.append(0);
+                }
+            }
+            builder.append(miniBuilder);
+        }
+
+        String str = builder.toString();
+
+        List<String> results = new ArrayList<String>();
+        int index = 0;
+        while (true) {
+            if (index + MAX >= str.length()) {
+                results.add(str.substring(index));
+                break;
+            } else {
+                results.add(str.substring(index, index + MAX));
+            }
+            index += MAX;
+        }
+        return results;
+    }
+
+    public static String decode(String code) {
+        StringBuilder builder = new StringBuilder();
+        int start = 0;
+        while (start + 8 < code.length()) {
+            String charCode = code.substring(start, start + 8);
+            int t = 0;
+            for (int i = 0; i < 8; ++i) {
+                char c = charCode.charAt(i);
+                t += (c == '1') ? Math.round(Math.pow(2, 7 - i)) : 0;
+            }
+            if (t == 0) {
+                break;
+            }
+            char ch = (char) t;
+            builder.append(ch);
+            start += 8;
+        }
+        return builder.toString();
     }
 }

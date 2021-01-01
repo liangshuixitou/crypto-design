@@ -1,9 +1,9 @@
 package top.l1hy.pojo;
 
-import top.l1hy.utils.KnapsackCryptoUtils;
+import top.l1hy.utils.JsonStringUtil;
+import top.l1hy.utils.KnapsackCryptoUtil;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -20,9 +20,11 @@ public class KnapsackCrypto {
     private BigInteger[] superSet;
     private BigInteger[] publicKeySet;
     private BigInteger k, t;
+    private String superSetString;
+    private String publicKeySetString;
 
     public KnapsackCrypto() {
-        KnapsackCryptoUtils.generateSetAndPublicKey(this);
+        KnapsackCryptoUtil.generateSetAndPublicKey(this);
     }
 
     public int getMAX() {
@@ -61,6 +63,22 @@ public class KnapsackCrypto {
         this.t = t;
     }
 
+    public String getSuperSetString() {
+        return superSetString;
+    }
+
+    public void setSuperSetString(String superSetString) {
+        this.superSetString = superSetString;
+    }
+
+    public String getPublicKeySetString() {
+        return publicKeySetString;
+    }
+
+    public void setPublicKeySetString(String publicKeySetString) {
+        this.publicKeySetString = publicKeySetString;
+    }
+
     @Override
     public String toString() {
         return "KnapsackCrypto{" +
@@ -75,22 +93,24 @@ public class KnapsackCrypto {
     public String toJsonString() {
         return "{" +
                 "MAX:" + MAX +
-                ", superSet:" + Arrays.toString(superSet) +
-                ", publicKeySet:" + Arrays.toString(publicKeySet) +
-                ", k:" + k +
-                ", t:" + t +
-                '}';
+                ", superSet:'" + JsonStringUtil.toJsonString(superSet) +
+                "', publicKeySet:'" + JsonStringUtil.toJsonString(publicKeySet) +
+                "', k:'" + k.toString() +
+                "', t:'" + t.toString() +
+                "'}";
     }
 
-    public void setPublicKeySetLong(ArrayList<Integer> list) {
-        for (int i = 0; i < MAX; ++i) {
-            publicKeySet[i] = new BigInteger(String.valueOf(list.get(i)));
+    public void setPublicKeySetLong(String[] list) {
+        publicKeySet = new BigInteger[this.getMAX()];
+        for (int i = 0; i < list.length; ++i) {
+            publicKeySet[i] = new BigInteger(list[i]);
         }
     }
 
-    public void setSuperSetLong(ArrayList<Integer> list) {
-        for (int i = 0; i < MAX; ++i) {
-            superSet[i] = new BigInteger(String.valueOf(list.get(i)));
+    public void setSuperSetLong(String[] list) {
+        superSet = new BigInteger[this.getMAX()];
+        for (int i = 0; i < list.length; ++i) {
+            superSet[i] = new BigInteger(list[i]);
         }
     }
 }

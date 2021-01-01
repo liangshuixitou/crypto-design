@@ -8,7 +8,7 @@ import org.bson.Document;
 /**
  * @author 11518
  */
-public class MongoDBUtils {
+public class MongoDBUtil {
     /**
      * mongodb数据库ip地址
      */

@@ -2,11 +2,11 @@ package l1hy.top.utils;
 
 import org.junit.Test;
 import top.l1hy.pojo.KnapsackCrypto;
-import top.l1hy.utils.KnapsackCryptoUtils;
+import top.l1hy.utils.KnapsackCryptoUtil;
 
 import java.math.BigInteger;
 
-public class KnapsackCryptoUtilsTest {
+public class KnapsackCryptoUtilTest {
     @Test
     public void testUtils (){
         KnapsackCrypto knapsackCrypto = new KnapsackCrypto();
@@ -36,10 +36,15 @@ public class KnapsackCryptoUtilsTest {
             }
             // 加密x信息，得到密文S
             System.out.println("第" + (j + 1) + "组随机产生的明文： " + x);
-            String S = KnapsackCryptoUtils.encrypt(x, knapsackCrypto).toString();
+            String S = KnapsackCryptoUtil.encrypt(x, knapsackCrypto).toString();
             System.out.println("加密得到的密文：" + S);
-            System.out.println("解密得到的明文：" + KnapsackCryptoUtils.decrypt(new BigInteger(S), knapsackCrypto));
+            System.out.println("解密得到的明文：" + KnapsackCryptoUtil.decrypt(new BigInteger(S), knapsackCrypto));
 
         }
+    }
+
+    @Test
+    public void testEncode () {
+        System.out.println(KnapsackCryptoUtil.encode("abcd", 12));
     }
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import top.l1hy.dao.KnapsackCryptoDao;
 import top.l1hy.pojo.KnapsackCrypto;
 import top.l1hy.pojo.ResultInfo;
-import top.l1hy.utils.KnapsackCryptoUtils;
+import top.l1hy.utils.KnapsackCryptoUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,15 +32,12 @@ public class KnapsackUpdateServlet extends HttpServlet {
 
         KnapsackCrypto kc = new KnapsackCrypto();
         kc.setMAX(MAX);
-        KnapsackCryptoUtils.generateSetAndPublicKey(kc);
+        KnapsackCryptoUtil.generateSetAndPublicKey(kc);
 
         KnapsackCryptoDao dao = new KnapsackCryptoDao();
         dao.updateKnapsack(kc, sessionName);
 
         Map<String, Object> map = new HashMap<String, Object>();
-
-        dao.updateKnapsack(kc, sessionName);
-
         map.put("sessionName", sessionName);
         map.put("knapsackCrypto", kc);
 

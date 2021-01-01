@@ -29,6 +29,7 @@ public class KnapsackGenerateServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String sessionName = req.getParameter("sessionName");
+        System.out.println(sessionName);
 
         KnapsackCryptoDao dao = new KnapsackCryptoDao();
         KnapsackCrypto kc = new KnapsackCrypto();
